@@ -5,3 +5,4 @@
 - Linked CGI samples from `index.html`.
 - Added SQLite notes storage under `data/` (ignored by Git).
 - Added documentation and project notes (`README.md`, `Agents.md`, `Agent.md`).
+- Added `.htaccess` to disable directory listing (`Options -Indexes`).
