@@ -1,11 +1,13 @@
 # Changelog
 
 ## 2026-01-22
+- Added Text Log app (`textlog/index.html`, `textlog/app.cgi`) - minimal web app with single-line text input, timestamp storage, and XSS prevention.
 - Added TODO app (`todo/index.html`, `todo/api.cgi`) with JavaScript + Tailwind CSS frontend and Python + SQLite backend.
 - Added `DirectoryIndex index.html` to `.htaccess` to enable directory access.
-- Updated `index.html` with link to TODO app.
+- Updated `index.html` with links to TODO and Text Log apps.
 - Updated `Agent.md` with SSH configuration notes and CRLF warning.
 - Updated `Agents.md` with repository purpose.
+- Updated `README.md` with app descriptions.
 
 ## 2026-01-20
 - Added CGI samples: `hello.cgi`, `time.cgi`, `notes.cgi`.

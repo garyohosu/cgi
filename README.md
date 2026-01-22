@@ -7,6 +7,8 @@
 - `hello.cgi`: 動作確認用の Hello
 - `time.cgi`: サーバー時刻表示
 - `notes.cgi`: SQLite を使った簡易メモ（`data/notes.db` を生成）
+- `todo/`: TODO List アプリ（JavaScript + Python CGI + SQLite）
+- `textlog/`: テキストログアプリ（1行テキストをタイムスタンプ付きで記録）
 
 ## デプロイ
 - リモート配置先: `/home/garyo/www/cgi`

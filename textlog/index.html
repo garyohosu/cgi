@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Text Log</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen py-8">
+  <div class="max-w-2xl mx-auto bg-white rounded-lg shadow-lg p-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">Text Log</h1>
+    
+    <form id="logForm" class="mb-6">
+      <div class="flex gap-2">
+        <input
+          type="text"
+          id="textInput"
+          placeholder="Enter your text..."
+          class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          required
+          maxlength="500"
+        >
+        <button
+          type="submit"
+          class="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition font-medium"
+        >
+          Submit
+        </button>
+      </div>
+    </form>
+
+    <div id="loading" class="text-center text-gray-500 py-4 hidden">
+      <svg class="animate-spin h-5 w-5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+    </div>
+
+    <div id="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 hidden"></div>
+
+    <div class="border-t pt-6">
+      <h2 class="text-xl font-semibold text-gray-700 mb-4">Recent Entries</h2>
+      
+      <div id="empty" class="text-center text-gray-400 py-8 hidden">
+        No entries yet. Submit your first text above!
+      </div>
+      
+      <div id="logList" class="space-y-3"></div>
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'app.cgi';
+    const logForm = document.getElementById('logForm');
+    const textInput = document.getElementById('textInput');
+    const logList = document.getElementById('logList');
+    const loading = document.getElementById('loading');
+    const empty = document.getElementById('empty');
+    const errorDiv = document.getElementById('error');
+
+    function showError(message) {
+      errorDiv.textContent = message;
+      errorDiv.classList.remove('hidden');
+      setTimeout(() => {
+        errorDiv.classList.add('hidden');
+      }, 5000);
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    function formatTimestamp(timestamp) {
+      const date = new Date(timestamp);
+      return date.toLocaleString('ja-JP', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit'
+      });
+    }
+
+    async function fetchLogs() {
+      loading.classList.remove('hidden');
+      try {
+        const res = await fetch(API_URL);
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        const data = await res.json();
+        renderLogs(data.entries);
+      } catch (e) {
+        console.error('Failed to fetch logs:', e);
+        showError('Failed to load entries. Please try again.');
+      } finally {
+        loading.classList.add('hidden');
+      }
+    }
+
+    function renderLogs(entries) {
+      logList.innerHTML = '';
+      if (entries.length === 0) {
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+
+      entries.forEach(entry => {
+        const div = document.createElement('div');
+        div.className = 'bg-gray-50 p-4 rounded-lg border border-gray-200';
+        div.innerHTML = `
+          <div class="text-gray-800 mb-2">${escapeHtml(entry.text)}</div>
+          <div class="text-xs text-gray-500">
+            <span class="font-medium">ID:</span> ${entry.id} | 
+            <span class="font-medium">Time:</span> ${formatTimestamp(entry.timestamp)}
+          </div>
+        `;
+        logList.appendChild(div);
+      });
+    }
+
+    logForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const text = textInput.value.trim();
+      if (!text) return;
+
+      const formData = new FormData();
+      formData.append('text', text);
+
+      try {
+        const res = await fetch(API_URL, { 
+          method: 'POST', 
+          body: formData 
+        });
+        
+        if (!res.ok) {
+          throw new Error(`HTTP error! status: ${res.status}`);
+        }
+        
+        const data = await res.json();
+        if (data.error) {
+          showError(data.error);
+        } else {
+          textInput.value = '';
+          fetchLogs();
+        }
+      } catch (e) {
+        console.error('Failed to add log:', e);
+        showError('Failed to submit entry. Please try again.');
+      }
+    });
+
+    // Initial load
+    fetchLogs();
+  </script>
+</body>
+</html>
