@@ -1,5 +1,8 @@
 # Runtime data
 /data/
+
+# Claude Code local settings
+/.claude/
 *.db
 *.sqlite
 *.sqlite3

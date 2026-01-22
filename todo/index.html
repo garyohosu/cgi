@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TODO App</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 min-h-screen py-8">
+  <div class="max-w-md mx-auto bg-white rounded-lg shadow-lg p-6">
+    <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">TODO List</h1>
+
+    <form id="todoForm" class="flex gap-2 mb-6">
+      <input
+        type="text"
+        id="todoInput"
+        placeholder="New task..."
+        class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        required
+      >
+      <button
+        type="submit"
+        class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+      >
+        Add
+      </button>
+    </form>
+
+    <div id="loading" class="text-center text-gray-500 py-4 hidden">Loading...</div>
+
+    <ul id="todoList" class="space-y-2"></ul>
+
+    <div id="empty" class="text-center text-gray-400 py-8 hidden">
+      No tasks yet. Add one above!
+    </div>
+  </div>
+
+  <script>
+    const API_URL = 'api.cgi';
+    const todoList = document.getElementById('todoList');
+    const todoForm = document.getElementById('todoForm');
+    const todoInput = document.getElementById('todoInput');
+    const loading = document.getElementById('loading');
+    const empty = document.getElementById('empty');
+
+    async function fetchTodos() {
+      loading.classList.remove('hidden');
+      try {
+        const res = await fetch(API_URL);
+        const data = await res.json();
+        renderTodos(data.todos);
+      } catch (e) {
+        console.error('Failed to fetch todos:', e);
+      } finally {
+        loading.classList.add('hidden');
+      }
+    }
+
+    function renderTodos(todos) {
+      todoList.innerHTML = '';
+      if (todos.length === 0) {
+        empty.classList.remove('hidden');
+        return;
+      }
+      empty.classList.add('hidden');
+
+      todos.forEach(todo => {
+        const li = document.createElement('li');
+        li.className = 'flex items-center gap-3 p-3 bg-gray-50 rounded-lg';
+        li.innerHTML = `
+          <input
+            type="checkbox"
+            ${todo.completed ? 'checked' : ''}
+            class="w-5 h-5 text-blue-500 rounded cursor-pointer"
+            onchange="toggleTodo(${todo.id}, this.checked)"
+          >
+          <span class="flex-1 ${todo.completed ? 'line-through text-gray-400' : 'text-gray-700'}">
+            ${escapeHtml(todo.title)}
+          </span>
+          <button
+            onclick="deleteTodo(${todo.id})"
+            class="text-red-500 hover:text-red-700 transition"
+          >
+            Delete
+          </button>
+        `;
+        todoList.appendChild(li);
+      });
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    todoForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const title = todoInput.value.trim();
+      if (!title) return;
+
+      const formData = new FormData();
+      formData.append('title', title);
+
+      try {
+        await fetch(API_URL, { method: 'POST', body: formData });
+        todoInput.value = '';
+        fetchTodos();
+      } catch (e) {
+        console.error('Failed to add todo:', e);
+      }
+    });
+
+    async function toggleTodo(id, completed) {
+      const formData = new FormData();
+      formData.append('id', id);
+      formData.append('completed', completed ? '1' : '0');
+
+      try {
+        await fetch(API_URL, { method: 'PUT', body: formData });
+        fetchTodos();
+      } catch (e) {
+        console.error('Failed to update todo:', e);
+      }
+    }
+
+    async function deleteTodo(id) {
+      const formData = new FormData();
+      formData.append('id', id);
+
+      try {
+        await fetch(API_URL, { method: 'DELETE', body: formData });
+        fetchTodos();
+      } catch (e) {
+        console.error('Failed to delete todo:', e);
+      }
+    }
+
+    fetchTodos();
+  </script>
+</body>
+</html>
