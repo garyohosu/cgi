@@ -1,0 +1,54 @@
+{
+  "apps": [
+    {
+      "name": "Bookmark Lab",
+      "description": "URLのOGP/メタ情報を収集して保存するブックマーク庫。",
+      "href": "./bookmark/",
+      "badge": "NEW",
+      "icon": "bookmark"
+    },
+    {
+      "name": "TODO Console",
+      "description": "タスク管理を最小構成で試す TODO アプリ。",
+      "href": "./todo/",
+      "badge": "APP",
+      "icon": "check-square"
+    },
+    {
+      "name": "Text Log",
+      "description": "1行ログを高速に記録するテキストログ。",
+      "href": "./textlog/",
+      "badge": "LOG",
+      "icon": "file-text"
+    },
+    {
+      "name": "Notes CGI",
+      "description": "SQLite に保存するシンプルなメモ。",
+      "href": "./notes.cgi",
+      "badge": "CGI",
+      "icon": "pen-square"
+    },
+    {
+      "name": "Time CGI",
+      "description": "サーバー時刻の即時確認。",
+      "href": "./time.cgi",
+      "badge": "CGI",
+      "icon": "clock"
+    },
+    {
+      "name": "Hello CGI",
+      "description": "最小の CGI 動作チェック。",
+      "href": "./hello.cgi",
+      "badge": "CGI",
+      "icon": "terminal"
+    }
+  ],
+  "quickLinks": [
+    { "label": "hello.cgi", "href": "./hello.cgi" },
+    { "label": "time.cgi", "href": "./time.cgi" },
+    { "label": "notes.cgi", "href": "./notes.cgi" },
+    { "label": "todo/", "href": "./todo/" },
+    { "label": "textlog/", "href": "./textlog/" },
+    { "label": "bookmark/", "href": "./bookmark/" }
+  ]
+}

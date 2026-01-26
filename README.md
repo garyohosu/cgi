@@ -26,6 +26,7 @@
 - 本番確認：`https://garyo.sakura.ne.jp/cgi/` にアクセスして表示を確認
 - もし一覧が出る場合：`https://garyo.sakura.ne.jp/cgi/index.html` に直接アクセスし、`.htaccess` の `DirectoryIndex index.html` と `AllowOverride` 設定を確認
 - スクショ（任意）：ブラウザで表示後にスクリーンショットを保存する
+- アプリカードは `apps.json` を編集して追加・更新する
 
 ## サンプル (リモート)
 - `https://garyo.sakura.ne.jp/cgi/index.html`
