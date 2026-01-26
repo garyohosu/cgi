@@ -15,7 +15,7 @@ def handler():
         raise ValueError("Method not allowed")
 
     params = _lib.get_query_params()
-    tz_param = params.get('tz', 'jst')
+    tz_param = params.get('tz', 'jst').lower()
 
     if tz_param not in ('jst', 'utc'):
         raise ValueError("Invalid timezone")

@@ -83,7 +83,7 @@ def validate(schema, data, path="$"):
     return errors
 
 def handler():
-    method = os.environ.get('REQUEST_METHOD', 'POST')
+    method = os.environ.get('REQUEST_METHOD', 'GET')
     if method != 'POST':
         raise ValueError("Method not allowed")
 

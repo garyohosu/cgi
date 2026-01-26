@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="en">
+<html lang="ja">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>API Toolbox</title>
+    <title>API ツールボックス</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -273,11 +273,11 @@
     <main>
       <header>
         <div>
-          <div class="eyebrow">Sakura CGI toolbox</div>
-          <h1>One-file APIs for quick checks.</h1>
+          <div class="eyebrow">さくら CGI ツールボックス</div>
+          <h1>クイックチェック用の1ファイルAPI。</h1>
           <p class="lead">
-            Use the cards below to hit each CGI endpoint. All calls are same-folder
-            relative paths like <code>./now.cgi</code>.
+            以下のカードを使用して、各CGIエンドポイントにアクセスしてください。
+            すべての呼び出しは、<code>./now.cgi</code> のように同一フォルダ内の相対パスで指定します。
           </p>
           <div class="chip-row">
             <span class="chip">GET ./now.cgi</span>
@@ -287,91 +287,91 @@
           </div>
         </div>
         <div class="panel">
-          <strong>Response format</strong>
-          <p>Success: {"ok": true, "data": {...}}</p>
-          <p>Failure: {"ok": false, "error": {...}}</p>
-          <p>All responses are JSON, no-cache.</p>
+          <strong>応答形式</strong>
+          <p>成功: {"ok": true, "data": {...}}</p>
+          <p>失敗: {"ok": false, "error": {...}}</p>
+          <p>すべての応答は JSON で、キャッシュなしです。</p>
         </div>
       </header>
 
       <section class="grid">
         <article class="card">
           <div class="tag">now.cgi - GET</div>
-          <h2>Server time</h2>
+          <h2>サーバー時間</h2>
           <div class="row">
             <div>
-              <label for="now-tz">Timezone</label>
+              <label for="now-tz">タイムゾーン</label>
               <select id="now-tz">
-                <option value="jst">JST</option>
+                <option value="jst">日本標準時</option>
                 <option value="utc">UTC</option>
               </select>
             </div>
             <div>
               <label>&nbsp;</label>
-              <button type="button" onclick="callNow()">Fetch time</button>
+              <button type="button" onclick="callNow()">時刻取得</button>
             </div>
           </div>
-          <div class="meta" id="now-meta">Ready.</div>
+          <div class="meta" id="now-meta">準備完了</div>
           <pre class="output" id="now-result" data-state="ok">{"ok": true, "data": {}}</pre>
         </article>
 
         <article class="card">
           <div class="tag">uuid.cgi - GET</div>
-          <h2>UUID batch</h2>
+          <h2>UUID 一括生成</h2>
           <div class="row">
             <div>
-              <label for="uuid-n">Count (1-50)</label>
+              <label for="uuid-n">生成数 (1-50)</label>
               <input id="uuid-n" type="number" min="1" max="50" value="3" />
             </div>
             <div>
               <label>&nbsp;</label>
-              <button type="button" class="secondary" onclick="callUuid()">Generate</button>
+              <button type="button" class="secondary" onclick="callUuid()">生成</button>
             </div>
           </div>
-          <div class="meta" id="uuid-meta">Ready.</div>
+          <div class="meta" id="uuid-meta">準備完了</div>
           <pre class="output" id="uuid-result" data-state="ok">{"ok": true, "data": {}}</pre>
         </article>
 
         <article class="card">
           <div class="tag">convert.cgi - GET</div>
-          <h2>Unit convert</h2>
+          <h2>単位変換</h2>
           <div class="row">
             <div>
-              <label for="conv-kind">Kind</label>
+              <label for="conv-kind">種別</label>
               <select id="conv-kind" onchange="updateUnits()">
-                <option value="temp">Temperature</option>
-                <option value="length">Length</option>
-                <option value="pressure">Pressure</option>
+                <option value="temp">温度</option>
+                <option value="length">長さ</option>
+                <option value="pressure">圧力</option>
               </select>
             </div>
             <div>
-              <label for="conv-value">Value</label>
+              <label for="conv-value">値</label>
               <input id="conv-value" type="number" step="any" value="0" />
             </div>
           </div>
           <div class="row">
             <div>
-              <label for="conv-from">From</label>
+              <label for="conv-from">変換元</label>
               <select id="conv-from"></select>
             </div>
             <div>
-              <label for="conv-to">To</label>
+              <label for="conv-to">変換先</label>
               <select id="conv-to"></select>
             </div>
             <div>
               <label>&nbsp;</label>
-              <button type="button" onclick="callConvert()">Convert</button>
+              <button type="button" onclick="callConvert()">変換</button>
             </div>
           </div>
-          <div class="meta" id="conv-meta">Ready.</div>
+          <div class="meta" id="conv-meta">準備完了</div>
           <pre class="output" id="conv-result" data-state="ok">{"ok": true, "data": {}}</pre>
         </article>
 
         <article class="card">
           <div class="tag">validate.cgi - POST</div>
-          <h2>JSON schema check</h2>
+          <h2>JSON スキーマ検証</h2>
           <div>
-            <label for="val-schema">Schema</label>
+            <label for="val-schema">スキーマ</label>
             <textarea id="val-schema">{
   "type": "object",
   "required": ["name", "age"],
@@ -382,22 +382,22 @@
 }</textarea>
           </div>
           <div>
-            <label for="val-data">Data</label>
+            <label for="val-data">データ</label>
             <textarea id="val-data">{
-  "name": "Alice",
+  "name": "太郎",
   "age": 20
 }</textarea>
           </div>
-          <button type="button" class="secondary" onclick="callValidate()">Validate</button>
-          <div class="meta" id="val-meta">Ready.</div>
+          <button type="button" class="secondary" onclick="callValidate()">検証</button>
+          <div class="meta" id="val-meta">準備完了</div>
           <pre class="output" id="val-result" data-state="ok">{"ok": true, "data": {}}</pre>
         </article>
       </section>
 
       <div class="footer">
-        <span>CGI path: /cgi/api/</span>
-        <span>Max POST body: 64KB</span>
-        <span>Same-origin only</span>
+        <span>CGI パス: /cgi/api/</span>
+        <span>最大 POST サイズ: 64KB</span>
+        <span>同一オリジンのみ</span>
       </div>
     </main>
 
