@@ -23,3 +23,4 @@
 
 ## サンプル (リモート)
 - `https://garyo.sakura.ne.jp/cgi/index.html`
+- `https://garyo.sakura.ne.jp/cgi/bookmark/`

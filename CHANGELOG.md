@@ -15,6 +15,7 @@
 - Added CGI end-to-end tests with a local HTTP server and a GitHub Actions CI workflow to run the test suite.
 - Added Agents.md guidance to require spec-based tests and CI setup when adding new programs.
 - Updated README with test/CI guidance and added bookmark link to top-level index.html.
+- Added bookmark app URL to README sample links.
 
 ## 2026-01-22
 - Added Text Log app (`textlog/index.html`, `textlog/app.cgi`) - minimal web app with single-line text input, timestamp storage, and XSS prevention.
