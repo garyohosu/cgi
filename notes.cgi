@@ -6,13 +6,18 @@ import os
 import sqlite3
 from datetime import datetime
 
-cgitb.enable()
+DEBUG = os.environ.get("DEBUG", "") == "1"
+if DEBUG:
+    cgitb.enable()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = os.path.join(BASE_DIR, "data")
 DB_PATH = os.path.join(DATA_DIR, "notes.db")
 
 os.makedirs(DATA_DIR, exist_ok=True)
+
+MAX_NOTE_LEN = 200
+error_message = ""
 
 conn = sqlite3.connect(DB_PATH)
 conn.execute(
@@ -27,11 +32,14 @@ form = cgi.FieldStorage()
 message = form.getfirst("message", "").strip()
 
 if message:
-    conn.execute(
-        "INSERT INTO notes (body, created_at) VALUES (?, ?)",
-        (message, datetime.now().isoformat(timespec="seconds")),
-    )
-    conn.commit()
+    if len(message) > MAX_NOTE_LEN:
+        error_message = f"Note is too long (max {MAX_NOTE_LEN} chars)."
+    else:
+        conn.execute(
+            "INSERT INTO notes (body, created_at) VALUES (?, ?)",
+            (message, datetime.now().isoformat(timespec="seconds")),
+        )
+        conn.commit()
 
 rows = conn.execute(
     "SELECT id, body, created_at FROM notes ORDER BY id DESC LIMIT 10"
@@ -49,13 +57,17 @@ print("""<!doctype html>
   </head>
   <body>
     <h1>SQLite Notes</h1>
+    {}
     <form method=\"post\" action=\"notes.cgi\">
-      <input type=\"text\" name=\"message\" placeholder=\"Add a note\" required />
+      <input type=\"text\" name=\"message\" placeholder=\"Add a note\" required maxlength=\"{}\" />
       <button type=\"submit\">Save</button>
     </form>
     <h2>Latest notes</h2>
     <ul>
-""")
+""".format(
+    f'<p style="color: #c00;">{html.escape(error_message)}</p>' if error_message else "",
+    MAX_NOTE_LEN,
+))
 
 for note_id, body, created_at in rows:
     safe_body = html.escape(body)

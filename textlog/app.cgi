@@ -1,14 +1,16 @@
 #!/usr/local/bin/python3
 import cgi
 import cgitb
-import html
 import json
 import os
 import sqlite3
+import sys
+import traceback
 from datetime import datetime
 
-# Enable CGI traceback for debugging
-cgitb.enable()
+DEBUG = os.environ.get("DEBUG", "") == "1"
+if DEBUG:
+    cgitb.enable()
 
 # Setup paths
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -17,6 +19,8 @@ DB_PATH = os.path.join(DATA_DIR, "database.db")
 
 # Ensure data directory exists
 os.makedirs(DATA_DIR, exist_ok=True)
+
+MAX_TEXT_LEN = 500
 
 def get_db():
     """Initialize and return database connection"""
@@ -43,9 +47,8 @@ def json_response(data, status="200 OK"):
     print(json.dumps(data, ensure_ascii=False))
 
 def sanitize_text(text):
-    """Sanitize text input to prevent XSS"""
-    # Remove any HTML tags and escape special characters
-    return html.escape(text.strip())
+    """Normalize text input before storage"""
+    return text.strip()
 
 def get_entries():
     """Fetch all entries in reverse chronological order"""
@@ -65,8 +68,8 @@ def add_entry(text):
         return None
     
     # Limit text length
-    if len(safe_text) > 500:
-        safe_text = safe_text[:500]
+    if len(safe_text) > MAX_TEXT_LEN:
+        safe_text = safe_text[:MAX_TEXT_LEN]
     
     conn = get_db()
     timestamp = datetime.now().isoformat()
@@ -99,7 +102,8 @@ elif method == "GET":
         entries = get_entries()
         json_response({"entries": entries})
     except Exception as e:
-        json_response({"error": str(e)}, "500 Internal Server Error")
+        traceback.print_exc(file=sys.stderr)
+        json_response({"error": "Internal Server Error"}, "500 Internal Server Error")
 
 elif method == "POST":
     # Add new entry
@@ -116,7 +120,8 @@ elif method == "POST":
             else:
                 json_response({"error": "Failed to create entry"}, "400 Bad Request")
     except Exception as e:
-        json_response({"error": str(e)}, "500 Internal Server Error")
+        traceback.print_exc(file=sys.stderr)
+        json_response({"error": "Internal Server Error"}, "500 Internal Server Error")
 
 else:
     # Method not allowed

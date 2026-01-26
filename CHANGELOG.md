@@ -5,6 +5,9 @@
 - Added `CLAUDE.md` to redirect Claude Code to read `Agents.md`.
 - Added AI CLI common settings section to `Agents.md`.
 - Added rule to update `CHANGELOG.md` before pushing.
+- Hardened CGI apps with input validation, length limits, safer error handling, and debug gating; fixed textlog double-escaping; added client-side maxlengths.
+- Normalized `.cgi` files to LF line endings for upload compatibility.
+- Added `.gitattributes` rule to enforce LF for `.cgi` files.
 
 ## 2026-01-22
 - Added Text Log app (`textlog/index.html`, `textlog/app.cgi`) - minimal web app with single-line text input, timestamp storage, and XSS prevention.

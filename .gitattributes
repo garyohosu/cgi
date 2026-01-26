@@ -1,0 +1,2 @@
+# Enforce LF to avoid CGI 500 errors on upload.
+*.cgi text eol=lf
