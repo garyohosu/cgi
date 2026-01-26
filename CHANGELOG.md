@@ -1,5 +1,11 @@
 # Changelog
 
+## 2026-01-26
+- Merged `Agent.md` into `Agents.md` and deleted `Agent.md`.
+- Added `CLAUDE.md` to redirect Claude Code to read `Agents.md`.
+- Added AI CLI common settings section to `Agents.md`.
+- Added rule to update `CHANGELOG.md` before pushing.
+
 ## 2026-01-22
 - Added Text Log app (`textlog/index.html`, `textlog/app.cgi`) - minimal web app with single-line text input, timestamp storage, and XSS prevention.
 - Added TODO app (`todo/index.html`, `todo/api.cgi`) with JavaScript + Tailwind CSS frontend and Python + SQLite backend.
