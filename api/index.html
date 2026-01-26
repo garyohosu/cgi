@@ -1,0 +1,528 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>API Toolbox</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Sora:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --ink: #1c1a17;
+        --muted: #5f5a54;
+        --cream: #f7f1e6;
+        --sand: #f3e2c9;
+        --accent: #ff7a18;
+        --teal: #0f766e;
+        --card: rgba(255, 255, 255, 0.85);
+        --shadow: 0 24px 60px rgba(44, 38, 30, 0.12);
+        --border: rgba(28, 26, 23, 0.12);
+        --mono: "JetBrains Mono", "Courier New", monospace;
+        --sans: "Sora", "Segoe UI", sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: var(--sans);
+        color: var(--ink);
+        background:
+          radial-gradient(circle at 10% 10%, rgba(255, 122, 24, 0.12), transparent 45%),
+          radial-gradient(circle at 90% 20%, rgba(15, 118, 110, 0.18), transparent 50%),
+          linear-gradient(120deg, var(--cream), var(--sand));
+        min-height: 100vh;
+      }
+
+      .grain {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        background-image:
+          radial-gradient(rgba(28, 26, 23, 0.06) 1px, transparent 1px),
+          radial-gradient(rgba(28, 26, 23, 0.04) 1px, transparent 1px);
+        background-size: 48px 48px, 16px 16px;
+        opacity: 0.2;
+      }
+
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 48px 24px 80px;
+      }
+
+      header {
+        display: grid;
+        gap: 28px;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        align-items: center;
+        margin-bottom: 40px;
+      }
+
+      .eyebrow {
+        text-transform: uppercase;
+        letter-spacing: 0.35em;
+        font-size: 12px;
+        color: var(--teal);
+        font-weight: 600;
+      }
+
+      h1 {
+        font-size: clamp(32px, 5vw, 52px);
+        margin: 12px 0 16px;
+        line-height: 1.1;
+      }
+
+      .lead {
+        color: var(--muted);
+        font-size: 1.05rem;
+        max-width: 480px;
+      }
+
+      .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .chip {
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-family: var(--mono);
+        background: rgba(28, 26, 23, 0.08);
+        border: 1px solid rgba(28, 26, 23, 0.12);
+      }
+
+      .panel {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+        display: grid;
+        gap: 16px;
+      }
+
+      .panel strong {
+        display: block;
+        font-size: 18px;
+      }
+
+      .panel p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .grid {
+        display: grid;
+        gap: 22px;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: 26px;
+        padding: 20px;
+        box-shadow: var(--shadow);
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+        animation: rise 0.8s ease both;
+      }
+
+      .card:nth-child(2) { animation-delay: 0.05s; }
+      .card:nth-child(3) { animation-delay: 0.1s; }
+      .card:nth-child(4) { animation-delay: 0.15s; }
+
+      .card h2 {
+        margin: 0;
+        font-size: 20px;
+      }
+
+      .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        font-weight: 600;
+        color: var(--teal);
+      }
+
+      label {
+        font-size: 13px;
+        color: var(--muted);
+        display: block;
+        margin-bottom: 6px;
+      }
+
+      input,
+      select,
+      textarea {
+        width: 100%;
+        padding: 10px 12px;
+        border-radius: 12px;
+        border: 1px solid rgba(28, 26, 23, 0.2);
+        font-family: var(--sans);
+        font-size: 14px;
+        background: rgba(255, 255, 255, 0.95);
+      }
+
+      textarea {
+        min-height: 120px;
+        font-family: var(--mono);
+        font-size: 12px;
+      }
+
+      .row {
+        display: grid;
+        gap: 12px;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      }
+
+      button {
+        padding: 10px 16px;
+        border-radius: 999px;
+        border: none;
+        background: var(--accent);
+        color: white;
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        box-shadow: 0 10px 24px rgba(255, 122, 24, 0.3);
+      }
+
+      button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 14px 30px rgba(255, 122, 24, 0.38);
+      }
+
+      .secondary {
+        background: rgba(15, 118, 110, 0.1);
+        color: var(--teal);
+        box-shadow: none;
+        border: 1px solid rgba(15, 118, 110, 0.3);
+      }
+
+      .output {
+        background: #1b1a17;
+        color: #f3f1ec;
+        border-radius: 16px;
+        padding: 14px;
+        font-family: var(--mono);
+        font-size: 12px;
+        overflow-x: auto;
+        min-height: 120px;
+      }
+
+      .output[data-state="error"] {
+        background: #3a1d14;
+        color: #ffd9c6;
+      }
+
+      .meta {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--muted);
+      }
+
+      .footer {
+        margin-top: 48px;
+        font-size: 12px;
+        color: var(--muted);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      @keyframes rise {
+        from {
+          opacity: 0;
+          transform: translateY(12px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .card {
+          animation: none;
+        }
+        button {
+          transition: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grain"></div>
+    <main>
+      <header>
+        <div>
+          <div class="eyebrow">Sakura CGI toolbox</div>
+          <h1>One-file APIs for quick checks.</h1>
+          <p class="lead">
+            Use the cards below to hit each CGI endpoint. All calls are same-folder
+            relative paths like <code>./now.cgi</code>.
+          </p>
+          <div class="chip-row">
+            <span class="chip">GET ./now.cgi</span>
+            <span class="chip">GET ./uuid.cgi</span>
+            <span class="chip">POST ./validate.cgi</span>
+            <span class="chip">GET ./convert.cgi</span>
+          </div>
+        </div>
+        <div class="panel">
+          <strong>Response format</strong>
+          <p>Success: {"ok": true, "data": {...}}</p>
+          <p>Failure: {"ok": false, "error": {...}}</p>
+          <p>All responses are JSON, no-cache.</p>
+        </div>
+      </header>
+
+      <section class="grid">
+        <article class="card">
+          <div class="tag">now.cgi - GET</div>
+          <h2>Server time</h2>
+          <div class="row">
+            <div>
+              <label for="now-tz">Timezone</label>
+              <select id="now-tz">
+                <option value="jst">JST</option>
+                <option value="utc">UTC</option>
+              </select>
+            </div>
+            <div>
+              <label>&nbsp;</label>
+              <button type="button" onclick="callNow()">Fetch time</button>
+            </div>
+          </div>
+          <div class="meta" id="now-meta">Ready.</div>
+          <pre class="output" id="now-result" data-state="ok">{"ok": true, "data": {}}</pre>
+        </article>
+
+        <article class="card">
+          <div class="tag">uuid.cgi - GET</div>
+          <h2>UUID batch</h2>
+          <div class="row">
+            <div>
+              <label for="uuid-n">Count (1-50)</label>
+              <input id="uuid-n" type="number" min="1" max="50" value="3" />
+            </div>
+            <div>
+              <label>&nbsp;</label>
+              <button type="button" class="secondary" onclick="callUuid()">Generate</button>
+            </div>
+          </div>
+          <div class="meta" id="uuid-meta">Ready.</div>
+          <pre class="output" id="uuid-result" data-state="ok">{"ok": true, "data": {}}</pre>
+        </article>
+
+        <article class="card">
+          <div class="tag">convert.cgi - GET</div>
+          <h2>Unit convert</h2>
+          <div class="row">
+            <div>
+              <label for="conv-kind">Kind</label>
+              <select id="conv-kind" onchange="updateUnits()">
+                <option value="temp">Temperature</option>
+                <option value="length">Length</option>
+                <option value="pressure">Pressure</option>
+              </select>
+            </div>
+            <div>
+              <label for="conv-value">Value</label>
+              <input id="conv-value" type="number" step="any" value="0" />
+            </div>
+          </div>
+          <div class="row">
+            <div>
+              <label for="conv-from">From</label>
+              <select id="conv-from"></select>
+            </div>
+            <div>
+              <label for="conv-to">To</label>
+              <select id="conv-to"></select>
+            </div>
+            <div>
+              <label>&nbsp;</label>
+              <button type="button" onclick="callConvert()">Convert</button>
+            </div>
+          </div>
+          <div class="meta" id="conv-meta">Ready.</div>
+          <pre class="output" id="conv-result" data-state="ok">{"ok": true, "data": {}}</pre>
+        </article>
+
+        <article class="card">
+          <div class="tag">validate.cgi - POST</div>
+          <h2>JSON schema check</h2>
+          <div>
+            <label for="val-schema">Schema</label>
+            <textarea id="val-schema">{
+  "type": "object",
+  "required": ["name", "age"],
+  "properties": {
+    "name": {"type": "string", "minLength": 1},
+    "age": {"type": "integer", "minimum": 0}
+  }
+}</textarea>
+          </div>
+          <div>
+            <label for="val-data">Data</label>
+            <textarea id="val-data">{
+  "name": "Alice",
+  "age": 20
+}</textarea>
+          </div>
+          <button type="button" class="secondary" onclick="callValidate()">Validate</button>
+          <div class="meta" id="val-meta">Ready.</div>
+          <pre class="output" id="val-result" data-state="ok">{"ok": true, "data": {}}</pre>
+        </article>
+      </section>
+
+      <div class="footer">
+        <span>CGI path: /cgi/api/</span>
+        <span>Max POST body: 64KB</span>
+        <span>Same-origin only</span>
+      </div>
+    </main>
+
+    <script>
+      const units = {
+        temp: ["c", "f", "k"],
+        length: ["mm", "cm", "m", "km", "inch", "ft"],
+        pressure: ["pa", "kpa", "mpa", "bar", "psi"],
+      };
+
+      function $(id) {
+        return document.getElementById(id);
+      }
+
+      function setOptions(selectEl, items) {
+        while (selectEl.firstChild) {
+          selectEl.removeChild(selectEl.firstChild);
+        }
+        items.forEach((item) => {
+          const option = document.createElement("option");
+          option.value = item;
+          option.textContent = item;
+          selectEl.appendChild(option);
+        });
+      }
+
+      function updateUnits() {
+        const kind = $("conv-kind").value;
+        setOptions($("conv-from"), units[kind]);
+        setOptions($("conv-to"), units[kind]);
+      }
+
+      function formatPayload(payload) {
+        try {
+          return JSON.stringify(payload, null, 2);
+        } catch (e) {
+          return "(unprintable response)";
+        }
+      }
+
+      async function requestJson(url, options) {
+        const started = performance.now();
+        try {
+          const res = await fetch(url, {
+            cache: "no-store",
+            ...options,
+          });
+          const contentType = res.headers.get("content-type") || "";
+          let payload = null;
+          if (contentType.includes("application/json")) {
+            payload = await res.json();
+          } else {
+            payload = { ok: false, error: { code: "invalid_response", message: "Not JSON" } };
+          }
+          const elapsed = Math.round(performance.now() - started);
+          return { ok: res.ok && payload && payload.ok, status: res.status, elapsed, payload };
+        } catch (err) {
+          const elapsed = Math.round(performance.now() - started);
+          return {
+            ok: false,
+            status: 0,
+            elapsed,
+            payload: { ok: false, error: { code: "network_error", message: "Request failed" } },
+          };
+        }
+      }
+
+      function renderResult(prefix, result) {
+        const meta = $(`${prefix}-meta`);
+        const output = $(`${prefix}-result`);
+        const statusLabel = result.status ? `status ${result.status}` : "offline";
+        meta.textContent = `${statusLabel} - ${result.elapsed}ms`;
+        output.textContent = formatPayload(result.payload);
+        output.dataset.state = result.ok ? "ok" : "error";
+      }
+
+      async function callNow() {
+        const tz = $("now-tz").value;
+        const res = await requestJson(`./now.cgi?tz=${encodeURIComponent(tz)}`);
+        renderResult("now", res);
+      }
+
+      async function callUuid() {
+        const n = $("uuid-n").value;
+        const res = await requestJson(`./uuid.cgi?n=${encodeURIComponent(n)}`);
+        renderResult("uuid", res);
+      }
+
+      async function callConvert() {
+        const kind = $("conv-kind").value;
+        const value = $("conv-value").value;
+        const from = $("conv-from").value;
+        const to = $("conv-to").value;
+        const query = new URLSearchParams({ kind, value, from, to });
+        const res = await requestJson(`./convert.cgi?${query.toString()}`);
+        renderResult("conv", res);
+      }
+
+      async function callValidate() {
+        let schema;
+        let data;
+        try {
+          schema = JSON.parse($("val-schema").value);
+          data = JSON.parse($("val-data").value);
+        } catch (e) {
+          renderResult("val", {
+            ok: false,
+            status: 0,
+            elapsed: 0,
+            payload: {
+              ok: false,
+              error: { code: "client_json", message: "Invalid JSON in input" },
+            },
+          });
+          return;
+        }
+        const res = await requestJson("./validate.cgi", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ schema, data }),
+        });
+        renderResult("val", res);
+      }
+
+      updateUnits();
+    </script>
+  </body>
+</html>

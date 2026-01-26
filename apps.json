@@ -5,6 +5,15 @@
   ],
   "apps": [
     {
+      "name": "API Toolbox",
+      "description": "時刻取得・UUID生成・単位変換・JSONスキーマ検証など1ファイルAPIツール集。",
+      "href": "./api/",
+      "badge": "API",
+      "icon": "wrench",
+      "category": "Utility",
+      "order": 5
+    },
+    {
       "name": "Bookmark Lab",
       "description": "URLのOGP/メタ情報を収集して保存するブックマーク庫。",
       "href": "./bookmark/",
@@ -60,6 +69,7 @@
     }
   ],
   "quickLinks": [
+    { "label": "api/", "href": "./api/" },
     { "label": "hello.cgi", "href": "./hello.cgi" },
     { "label": "time.cgi", "href": "./time.cgi" },
     { "label": "notes.cgi", "href": "./notes.cgi" },
