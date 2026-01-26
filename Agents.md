@@ -61,3 +61,14 @@
 - ローカルでテストを実行する（Windows 例）：`py -3 -m unittest discover -s （アプリ名）/tests`
 - CGI のエンドツーエンドテストはローカル HTTP サーバー経由で実行する。
 - CI は GitHub Actions を使い、`.github/workflows/ci.yml` にテスト実行手順を追加・更新する。
+
+## 新規アプリ追加の手順（チェックリスト）
+
+- `（アプリ名）/spec.md` を作成し、API/画面/データモデル/運用注意を明文化する。
+- `（アプリ名）/index.html`（フロント）と `（アプリ名）/cgi/`（バック）を作成する。
+- CGI は `.cgi` 拡張子・`755` 権限・LF 改行を守る。
+- SQLite は `（アプリ名）/cgi/data/` 配下に保存し、`.gitignore` で除外する。
+- `（アプリ名）/tests/` に spec ベースのテストを追加し、ローカル実行・CI 更新を行う。
+- `/cgi/` 入口のカードを `apps.json` に追加（`category` / `order` / `health` を必要に応じて設定）。
+- `index.html` / `README.md` / `CHANGELOG.md` を更新する。
+- デプロイ後に `https://garyo.sakura.ne.jp/cgi/` と新アプリURLを確認する。
