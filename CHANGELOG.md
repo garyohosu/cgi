@@ -9,6 +9,12 @@
 - Normalized `.cgi` files to LF line endings for upload compatibility.
 - Added `.gitattributes` rule to enforce LF for `.cgi` files.
 - Added Text Log delete API (DELETE with id) for cleanup and testing.
+- Added `review.md` with a spec-based review of the bookmark app.
+- Hardened bookmark app: server-side validation with 400s, safer error handling/debug gating, improved SSRF/URL normalization, metadata parsing, safe client-side rendering, and added spec-based tests.
+- Added CGI integration tests for bookmark API endpoints and ignored bookmark debug logs directory.
+- Added CGI end-to-end tests with a local HTTP server and a GitHub Actions CI workflow to run the test suite.
+- Added Agents.md guidance to require spec-based tests and CI setup when adding new programs.
+- Updated README with test/CI guidance and added bookmark link to top-level index.html.
 
 ## 2026-01-22
 - Added Text Log app (`textlog/index.html`, `textlog/app.cgi`) - minimal web app with single-line text input, timestamp storage, and XSS prevention.

@@ -29,6 +29,7 @@
 - CGI の拡張子は `.cgi`、権限は `755` を維持する。
 - SQLite の実データやログは Git 管理しない（`.gitignore` を維持）。
 - **パスワードやAPIキーなどの秘密情報はGitHubに絶対にコミットしない。**
+- 新しいプログラムを追加したら、**spec.md に基づくテストを作成・実行し、CI の方法も用意する**（下記参照）。
 
 # 起動時に覚えておくこと
 
@@ -53,3 +54,10 @@
       IdentityFile ~/.ssh/sakura_key
   ```
 - 接続コマンド: `ssh sakura`
+
+## テスト/CI（新規プログラム追加時に必須）
+
+- spec.md に基づくテストを `（アプリ名）/tests/` に追加する。
+- ローカルでテストを実行する（Windows 例）：`py -3 -m unittest discover -s （アプリ名）/tests`
+- CGI のエンドツーエンドテストはローカル HTTP サーバー経由で実行する。
+- CI は GitHub Actions を使い、`.github/workflows/ci.yml` にテスト実行手順を追加・更新する。

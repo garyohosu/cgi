@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookmark App</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .bookmark-card img {
+            max-width: 100%;
+            height: auto;
+            max-height: 200px;
+            object-fit: cover;
+        }
+        .tag-badge {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <h1 class="mb-4">Bookmarks</h1>
+
+        <!-- Add Form -->
+        <div class="card mb-4">
+            <div class="card-header">Add New Bookmark</div>
+            <div class="card-body">
+                <form id="addForm">
+                    <div class="mb-3">
+                        <label for="urlInput" class="form-label">URL</label>
+                        <input type="url" class="form-control" id="urlInput" required placeholder="https://example.com" maxlength="2048">
+                    </div>
+                    <div class="mb-3">
+                        <label for="tagsInput" class="form-label">Tags (comma separated)</label>
+                        <input type="text" class="form-control" id="tagsInput" placeholder="ai, work, reading" maxlength="200">
+                    </div>
+                    <div class="mb-3">
+                        <label for="noteInput" class="form-label">Note</label>
+                        <textarea class="form-control" id="noteInput" rows="2" placeholder="Summary or thoughts..." maxlength="500"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" id="addBtn">Add</button>
+                    <div id="addStatus" class="mt-2"></div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Search & Filter -->
+        <div class="row mb-3">
+            <div class="col-md-8">
+                <input type="text" class="form-control" id="searchInput" placeholder="Search title, description, url...">
+            </div>
+            <div class="col-md-4">
+                 <!-- Tag Cloud / Filter display -->
+                 <div id="tagCloud"></div>
+            </div>
+        </div>
+
+        <!-- List -->
+        <div id="bookmarkList" class="row g-4">
+            <!-- Items will be injected here -->
+        </div>
+        
+        <div class="mt-4 text-center">
+            <button id="loadMoreBtn" class="btn btn-secondary d-none">Load More</button>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = './cgi/api.cgi';
+        let currentLimit = 50;
+        let currentOffset = 0;
+        let currentTag = null;
+        let currentQuery = '';
+
+        async function fetchBookmarks(reset=false) {
+            if (reset) {
+                currentOffset = 0;
+                document.getElementById('bookmarkList').innerHTML = '';
+            }
+
+            const params = new URLSearchParams({
+                action: 'list',
+                limit: currentLimit,
+                offset: currentOffset
+            });
+            if (currentQuery) params.append('q', currentQuery);
+            if (currentTag) params.append('tag', currentTag);
+
+            try {
+                const res = await fetch(`${API_URL}?${params}`);
+                const json = await res.json();
+                
+                if (json.ok) {
+                    renderBookmarks(json.data.items);
+                    if (json.data.total > currentOffset + json.data.items.length) {
+                         document.getElementById('loadMoreBtn').classList.remove('d-none');
+                    } else {
+                         document.getElementById('loadMoreBtn').classList.add('d-none');
+                    }
+                    currentOffset += json.data.items.length;
+                } else {
+                    console.error(json.error);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+
+        function safeUrl(value) {
+            if (!value) return null;
+            try {
+                const url = new URL(value, window.location.href);
+                if (url.protocol === 'http:' || url.protocol === 'https:') {
+                    return url.toString();
+                }
+            } catch (e) { /* ignore */ }
+            return null;
+        }
+
+        function createTagBadge(label, onClick, className) {
+            const badge = document.createElement('button');
+            badge.type = 'button';
+            badge.className = className;
+            badge.textContent = label;
+            badge.addEventListener('click', onClick);
+            return badge;
+        }
+
+        function renderBookmarks(items) {
+            const list = document.getElementById('bookmarkList');
+            items.forEach(item => {
+                const col = document.createElement('div');
+                col.className = 'col-md-12';
+
+                const card = document.createElement('div');
+                card.className = 'card h-100';
+
+                const row = document.createElement('div');
+                row.className = 'row g-0';
+
+                const imageUrl = safeUrl(item.image_url);
+                if (imageUrl) {
+                    const imgCol = document.createElement('div');
+                    imgCol.className = 'col-md-3';
+                    const img = document.createElement('img');
+                    img.src = imageUrl;
+                    img.className = 'img-fluid rounded-start';
+                    img.alt = 'Thumbnail';
+                    img.loading = 'lazy';
+                    imgCol.appendChild(img);
+                    row.appendChild(imgCol);
+                }
+
+                const bodyCol = document.createElement('div');
+                bodyCol.className = imageUrl ? 'col-md-9' : 'col-md-12';
+
+                const body = document.createElement('div');
+                body.className = 'card-body';
+
+                const title = document.createElement('h5');
+                title.className = 'card-title';
+                const titleText = item.title || item.url || '';
+                const href = safeUrl(item.url);
+                if (href) {
+                    const link = document.createElement('a');
+                    link.href = href;
+                    link.target = '_blank';
+                    link.rel = 'noopener noreferrer';
+                    link.textContent = titleText;
+                    title.appendChild(link);
+                } else {
+                    const span = document.createElement('span');
+                    span.textContent = titleText;
+                    title.appendChild(span);
+                }
+
+                const meta = document.createElement('p');
+                meta.className = 'card-text';
+                const metaSmall = document.createElement('small');
+                metaSmall.className = 'text-muted';
+                const created = item.created_at ? new Date(item.created_at).toLocaleString() : '';
+                metaSmall.textContent = created;
+                meta.appendChild(metaSmall);
+
+                body.appendChild(title);
+                body.appendChild(meta);
+
+                if (item.description) {
+                    const desc = document.createElement('p');
+                    desc.className = 'card-text';
+                    desc.textContent = item.description;
+                    body.appendChild(desc);
+                }
+
+                if (item.note) {
+                    const note = document.createElement('p');
+                    note.className = 'card-text';
+                    const strong = document.createElement('strong');
+                    strong.textContent = 'Note:';
+                    note.appendChild(strong);
+                    note.appendChild(document.createTextNode(' ' + item.note));
+                    body.appendChild(note);
+                }
+
+                const tagsContainer = document.createElement('div');
+                tagsContainer.className = 'mb-2';
+                if (item.tags) {
+                    item.tags.split(',').forEach(tag => {
+                        const t = tag.trim();
+                        if (!t) return;
+                        const badge = createTagBadge(
+                            t,
+                            () => filterByTag(t),
+                            'badge bg-secondary me-1 tag-badge'
+                        );
+                        tagsContainer.appendChild(badge);
+                    });
+                }
+                body.appendChild(tagsContainer);
+
+                const delBtn = document.createElement('button');
+                delBtn.type = 'button';
+                delBtn.className = 'btn btn-sm btn-danger';
+                delBtn.textContent = 'Delete';
+                delBtn.addEventListener('click', () => deleteBookmark(item.id));
+                body.appendChild(delBtn);
+
+                bodyCol.appendChild(body);
+                row.appendChild(bodyCol);
+                card.appendChild(row);
+                col.appendChild(card);
+                list.appendChild(col);
+            });
+        }
+
+        async function fetchTags() {
+            try {
+                const res = await fetch(`${API_URL}?action=tags`);
+                const json = await res.json();
+                if (json.ok) {
+                    const cloud = document.getElementById('tagCloud');
+                    cloud.innerHTML = '';
+                    if (currentTag) {
+                        const clearBadge = createTagBadge(
+                            `Clear Filter: ${currentTag}`,
+                            () => filterByTag(null),
+                            'badge bg-primary me-1 tag-badge'
+                        );
+                        cloud.appendChild(clearBadge);
+                        cloud.appendChild(document.createTextNode(' '));
+                    }
+                    json.data.tags.forEach(t => {
+                        const label = `${t.tag} (${t.count})`;
+                        const badge = createTagBadge(
+                            label,
+                            () => filterByTag(t.tag),
+                            'badge bg-light text-dark border me-1 tag-badge'
+                        );
+                        cloud.appendChild(badge);
+                    });
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        async function addBookmark(e) {
+            e.preventDefault();
+            const btn = document.getElementById('addBtn');
+            const status = document.getElementById('addStatus');
+            btn.disabled = true;
+            status.textContent = 'Adding...';
+
+            const url = document.getElementById('urlInput').value;
+            const tags = document.getElementById('tagsInput').value;
+            const note = document.getElementById('noteInput').value;
+
+            try {
+                const res = await fetch(`${API_URL}?action=add`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        url: url,
+                        tags: tags.split(',').map(t => t.trim()).filter(t => t),
+                        note: note
+                    })
+                });
+                const json = await res.json();
+                if (json.ok) {
+                    status.textContent = 'Added!';
+                    document.getElementById('addForm').reset();
+                    fetchBookmarks(true);
+                    fetchTags();
+                } else {
+                    status.textContent = 'Error: ' + (json.error.message || 'Unknown error');
+                }
+            } catch (e) {
+                status.textContent = 'Error: ' + e.message;
+            } finally {
+                btn.disabled = false;
+                setTimeout(() => status.textContent = '', 3000);
+            }
+        }
+
+        async function deleteBookmark(id) {
+            if (!confirm('Are you sure?')) return;
+            try {
+                const res = await fetch(`${API_URL}?action=delete`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({id: id})
+                });
+                const json = await res.json();
+                if (json.ok) {
+                    fetchBookmarks(true);
+                    fetchTags();
+                } else {
+                    alert('Error deleting');
+                }
+            } catch(e) { alert('Error deleting'); }
+        }
+
+        function filterByTag(tag) {
+            currentTag = tag;
+            fetchBookmarks(true);
+            fetchTags();
+        }
+        
+        let debounceTimer;
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => {
+                currentQuery = e.target.value;
+                fetchBookmarks(true);
+            }, 300);
+        });
+
+        document.getElementById('addForm').addEventListener('submit', addBookmark);
+        document.getElementById('loadMoreBtn').addEventListener('click', () => fetchBookmarks());
+
+        // Init
+        fetchBookmarks(true);
+        fetchTags();
+    </script>
+</body>
+</html>
