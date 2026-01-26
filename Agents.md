@@ -1,3 +1,14 @@
+# AI CLI 共通設定
+
+各 AI CLI は起動時に以下のファイルを読む：
+- **Claude Code** → `CLAUDE.md`（このファイルから `Agents.md` を参照）
+- **Codex CLI** → `Agents.md`
+- **Gemini CLI** → `Agents.md`
+
+情報を共通化するため、設定・ルールは `Agents.md` に集約する。
+
+---
+
 # このリポジトリの目的
 
 さくらのレンタルサーバー上で、**JavaScript + CDN** のフロントエンドと **Python CGI + SQLite** のバックエンドを組み合わせた Web アプリを作成・デプロイするためのリポジトリ。
