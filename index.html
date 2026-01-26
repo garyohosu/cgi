@@ -166,6 +166,7 @@
           <h3 class="text-2xl font-semibold">Apps Dock</h3>
           <span class="text-xs uppercase tracking-[0.3em] text-cyan-200/60">Click to launch</span>
         </div>
+        <div id="categoryFilters" class="mt-4 flex flex-wrap gap-2 text-xs"></div>
         <div id="appGrid" class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3"></div>
       </section>
 
@@ -209,6 +210,10 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script>
       const fallbackData = {
+        health: [
+          { label: 'bookmark', url: './bookmark/cgi/api.cgi?action=health' },
+          { label: 'root', url: './api.cgi?action=health' },
+        ],
         apps: [
           {
             name: 'Bookmark Lab',
@@ -216,6 +221,8 @@
             href: './bookmark/',
             badge: 'NEW',
             icon: 'bookmark',
+            category: 'Lab',
+            order: 10,
           },
           {
             name: 'TODO Console',
@@ -223,6 +230,8 @@
             href: './todo/',
             badge: 'APP',
             icon: 'check-square',
+            category: 'Lab',
+            order: 20,
           },
           {
             name: 'Text Log',
@@ -230,6 +239,8 @@
             href: './textlog/',
             badge: 'LOG',
             icon: 'file-text',
+            category: 'Lab',
+            order: 30,
           },
           {
             name: 'Notes CGI',
@@ -237,6 +248,8 @@
             href: './notes.cgi',
             badge: 'CGI',
             icon: 'pen-square',
+            category: 'CGI',
+            order: 40,
           },
           {
             name: 'Time CGI',
@@ -244,6 +257,8 @@
             href: './time.cgi',
             badge: 'CGI',
             icon: 'clock',
+            category: 'Utility',
+            order: 50,
           },
           {
             name: 'Hello CGI',
@@ -251,6 +266,8 @@
             href: './hello.cgi',
             badge: 'CGI',
             icon: 'terminal',
+            category: 'Utility',
+            order: 60,
           },
         ],
         quickLinks: [
@@ -265,46 +282,104 @@
 
       const appGrid = document.getElementById('appGrid');
       const quickGrid = document.getElementById('quickLinks');
+      const categoryFilters = document.getElementById('categoryFilters');
+      const appState = {
+        currentCategory: 'All',
+        apps: [],
+        categories: [],
+      };
 
-      function renderApps(apps) {
+      function sortApps(apps) {
+        return [...apps].sort((a, b) => {
+          const orderA = Number.isFinite(a.order) ? a.order : 999;
+          const orderB = Number.isFinite(b.order) ? b.order : 999;
+          if (orderA !== orderB) return orderA - orderB;
+          return String(a.name || '').localeCompare(String(b.name || ''));
+        });
+      }
+
+      function getCategories(apps) {
+        const seen = new Set();
+        const categories = [];
+        apps.forEach((app) => {
+          if (app.category && !seen.has(app.category)) {
+            seen.add(app.category);
+            categories.push(app.category);
+          }
+        });
+        return categories;
+      }
+
+      function renderCategoryFilters(categories) {
+        categoryFilters.innerHTML = '';
+        ['All', ...categories].forEach((category) => {
+          const button = document.createElement('button');
+          const isActive = category === appState.currentCategory;
+          button.type = 'button';
+          button.textContent = category;
+          button.className = isActive
+            ? 'rounded-full border border-cyan-300/70 bg-cyan-300/20 px-4 py-2 text-xs font-semibold text-cyan-100'
+            : 'rounded-full border border-slate-700/80 bg-slate-900/70 px-4 py-2 text-xs text-slate-300 transition hover:border-cyan-300/60 hover:text-cyan-100';
+          button.addEventListener('click', () => {
+            appState.currentCategory = category;
+            renderCategoryFilters(categories);
+            renderApps();
+          });
+          categoryFilters.appendChild(button);
+        });
+      }
+
+      function getFilteredApps() {
+        if (appState.currentCategory === 'All') {
+          return appState.apps;
+        }
+        return appState.apps.filter((app) => app.category === appState.currentCategory);
+      }
+
+      function renderApps() {
+        const apps = getFilteredApps();
         appGrid.innerHTML = '';
         apps.forEach((app) => {
-        const card = document.createElement('a');
-        card.href = app.href;
-        card.className =
-          'glass group flex h-full flex-col gap-4 rounded-3xl p-6 transition duration-300 hover:-translate-y-1 hover:border-cyan-300/70 hover:shadow-glow';
+          const card = document.createElement('a');
+          card.href = app.href;
+          card.className =
+            'glass group flex h-full flex-col gap-4 rounded-3xl p-6 transition duration-300 hover:-translate-y-1 hover:border-cyan-300/70 hover:shadow-glow';
 
-        const badge = app.badge
-          ? `<span class="rounded-full border border-cyan-300/40 bg-cyan-300/10 px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-cyan-100">${app.badge}</span>`
-          : '';
+          const categoryBadge = app.category
+            ? `<span class="rounded-full border border-slate-600/60 bg-slate-900/70 px-3 py-1 text-[10px] uppercase tracking-[0.2em] text-slate-300">${app.category}</span>`
+            : '';
+          const badge = app.badge
+            ? `<span class="rounded-full border border-cyan-300/40 bg-cyan-300/10 px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-cyan-100">${app.badge}</span>`
+            : '';
+          const badges = [categoryBadge, badge].filter(Boolean).join('');
 
-        card.innerHTML = `
-          <div class="flex items-center justify-between">
-            <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-300/10 text-cyan-200">
-              <i data-lucide="${app.icon}"></i>
+          card.innerHTML = `
+            <div class="flex items-center justify-between">
+              <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-300/10 text-cyan-200">
+                <i data-lucide="${app.icon}"></i>
+              </div>
+              ${badges ? `<div class="flex flex-wrap justify-end gap-2">${badges}</div>` : ''}
             </div>
-            ${badge}
-          </div>
-          <div>
-            <h4 class="text-lg font-semibold text-white">${app.name}</h4>
-            <p class="mt-2 text-sm text-slate-400">${app.description}</p>
-          </div>
-          <div class="mt-auto text-xs font-mono text-cyan-200/70">Open →</div>
-        `;
+            <div>
+              <h4 class="text-lg font-semibold text-white">${app.name}</h4>
+              <p class="mt-2 text-sm text-slate-400">${app.description}</p>
+            </div>
+            <div class="mt-auto text-xs font-mono text-cyan-200/70">Open →</div>
+          `;
 
-        appGrid.appendChild(card);
+          appGrid.appendChild(card);
         });
       }
 
       function renderQuickLinks(links) {
         quickGrid.innerHTML = '';
         links.forEach((link) => {
-        const item = document.createElement('a');
-        item.href = link.href;
-        item.className =
-          'rounded-full border border-slate-700/80 bg-slate-900/70 px-4 py-2 text-xs text-slate-200 transition hover:border-cyan-300/70 hover:text-cyan-100';
-        item.textContent = link.label;
-        quickGrid.appendChild(item);
+          const item = document.createElement('a');
+          item.href = link.href;
+          item.className =
+            'rounded-full border border-slate-700/80 bg-slate-900/70 px-4 py-2 text-xs text-slate-200 transition hover:border-cyan-300/70 hover:text-cyan-100';
+          item.textContent = link.label;
+          quickGrid.appendChild(item);
         });
       }
 
@@ -318,6 +393,7 @@
           return {
             apps: Array.isArray(json.apps) ? json.apps : fallbackData.apps,
             quickLinks: Array.isArray(json.quickLinks) ? json.quickLinks : fallbackData.quickLinks,
+            health: Array.isArray(json.health) ? json.health : fallbackData.health,
           };
         } catch (e) {
           return fallbackData;
@@ -325,9 +401,13 @@
       }
 
       loadAppData().then((data) => {
-        renderApps(data.apps);
+        appState.apps = sortApps(data.apps);
+        appState.categories = getCategories(appState.apps);
+        renderCategoryFilters(appState.categories);
+        renderApps();
         renderQuickLinks(data.quickLinks);
         lucide.createIcons();
+        updateStatus(data.health);
       });
 
       tsParticles.load('tsparticles', {
@@ -354,11 +434,6 @@
       const statusLatency = document.getElementById('statusLatency');
       const statusMessage = document.getElementById('statusMessage');
 
-      const healthCandidates = [
-        { label: 'bookmark', url: './bookmark/cgi/api.cgi?action=health' },
-        { label: 'root', url: './api.cgi?action=health' },
-      ];
-
       async function tryHealth(endpoint) {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 1800);
@@ -378,7 +453,8 @@
         }
       }
 
-      async function updateStatus() {
+      async function updateStatus(candidates) {
+        const healthCandidates = Array.isArray(candidates) ? candidates : [];
         for (const endpoint of healthCandidates) {
           const result = await tryHealth(endpoint);
           if (result && result.data && result.data.ok) {
@@ -394,8 +470,6 @@
         statusLatency.textContent = '--';
         statusMessage.textContent = 'No health endpoint detected.';
       }
-
-      updateStatus();
     </script>
   </body>
 </html>

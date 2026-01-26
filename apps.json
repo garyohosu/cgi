@@ -1,46 +1,62 @@
 {
+  "health": [
+    { "label": "bookmark", "url": "./bookmark/cgi/api.cgi?action=health" },
+    { "label": "root", "url": "./api.cgi?action=health" }
+  ],
   "apps": [
     {
       "name": "Bookmark Lab",
       "description": "URLのOGP/メタ情報を収集して保存するブックマーク庫。",
       "href": "./bookmark/",
       "badge": "NEW",
-      "icon": "bookmark"
+      "icon": "bookmark",
+      "category": "Lab",
+      "order": 10
     },
     {
       "name": "TODO Console",
       "description": "タスク管理を最小構成で試す TODO アプリ。",
       "href": "./todo/",
       "badge": "APP",
-      "icon": "check-square"
+      "icon": "check-square",
+      "category": "Lab",
+      "order": 20
     },
     {
       "name": "Text Log",
       "description": "1行ログを高速に記録するテキストログ。",
       "href": "./textlog/",
       "badge": "LOG",
-      "icon": "file-text"
+      "icon": "file-text",
+      "category": "Lab",
+      "order": 30
     },
     {
       "name": "Notes CGI",
       "description": "SQLite に保存するシンプルなメモ。",
       "href": "./notes.cgi",
       "badge": "CGI",
-      "icon": "pen-square"
+      "icon": "pen-square",
+      "category": "CGI",
+      "order": 40
     },
     {
       "name": "Time CGI",
       "description": "サーバー時刻の即時確認。",
       "href": "./time.cgi",
       "badge": "CGI",
-      "icon": "clock"
+      "icon": "clock",
+      "category": "Utility",
+      "order": 50
     },
     {
       "name": "Hello CGI",
       "description": "最小の CGI 動作チェック。",
       "href": "./hello.cgi",
       "badge": "CGI",
-      "icon": "terminal"
+      "icon": "terminal",
+      "category": "Utility",
+      "order": 60
     }
   ],
   "quickLinks": [

@@ -26,7 +26,8 @@
 - 本番確認：`https://garyo.sakura.ne.jp/cgi/` にアクセスして表示を確認
 - もし一覧が出る場合：`https://garyo.sakura.ne.jp/cgi/index.html` に直接アクセスし、`.htaccess` の `DirectoryIndex index.html` と `AllowOverride` 設定を確認
 - スクショ（任意）：ブラウザで表示後にスクリーンショットを保存する
-- アプリカードは `apps.json` を編集して追加・更新する
+- アプリカードは `apps.json` を編集して追加・更新する（`category` と `order` で並び順を制御）
+- Status パネルのヘルスチェック先は `apps.json` の `health` 配列で管理する
 
 ## サンプル (リモート)
 - `https://garyo.sakura.ne.jp/cgi/index.html`

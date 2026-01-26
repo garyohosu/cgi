@@ -18,6 +18,7 @@
 - Added bookmark app URL to README sample links.
 - Refreshed top-level /cgi/ landing page with a cyber-style UI and added README instructions for landing page checks.
 - Added apps.json-driven app cards for the /cgi/ landing page and documented it in README.
+- Added app categories, ordering, and configurable health checks via apps.json for the landing page.
 
 ## 2026-01-22
 - Added Text Log app (`textlog/index.html`, `textlog/app.cgi`) - minimal web app with single-line text input, timestamp storage, and XSS prevention.
