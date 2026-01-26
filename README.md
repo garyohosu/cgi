@@ -21,6 +21,12 @@
 - ローカル実行（Windows 例）：`py -3 -m unittest discover -s （アプリ名）/tests`
 - CI は GitHub Actions（`.github/workflows/ci.yml`）でテストを実行
 
+## 入口ページの確認
+- ローカル確認：`python -m http.server 8000` を実行し `http://localhost:8000/` をブラウザで開く
+- 本番確認：`https://garyo.sakura.ne.jp/cgi/` にアクセスして表示を確認
+- もし一覧が出る場合：`https://garyo.sakura.ne.jp/cgi/index.html` に直接アクセスし、`.htaccess` の `DirectoryIndex index.html` と `AllowOverride` 設定を確認
+- スクショ（任意）：ブラウザで表示後にスクリーンショットを保存する
+
 ## サンプル (リモート)
 - `https://garyo.sakura.ne.jp/cgi/index.html`
 - `https://garyo.sakura.ne.jp/cgi/bookmark/`

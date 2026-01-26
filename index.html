@@ -3,19 +3,372 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>CGI Web App</title>
+    <title>GARYO CGI LAB</title>
+    <meta name="description" content="JavaScript + Python CGI + SQLite の実験場。" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      window.tailwind = {
+        config: {
+          theme: {
+            extend: {
+              fontFamily: {
+                sans: ['Space Grotesk', 'sans-serif'],
+                mono: ['IBM Plex Mono', 'monospace'],
+              },
+              colors: {
+                ink: '#0b0f1f',
+              },
+              boxShadow: {
+                glow: '0 0 40px rgba(80, 200, 255, 0.25)',
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      body {
+        background: #05060d;
+      }
+      .grid-overlay {
+        background-image:
+          linear-gradient(to right, rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+          linear-gradient(to bottom, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+        background-size: 120px 120px;
+      }
+      .status-dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 999px;
+        background: radial-gradient(circle, rgba(125, 211, 252, 1) 0%, rgba(14, 116, 144, 0.6) 70%);
+        box-shadow: 0 0 12px rgba(125, 211, 252, 0.9);
+        animation: pulse 1.6s infinite ease-in-out;
+      }
+      @keyframes pulse {
+        0%, 100% { transform: scale(0.9); opacity: 0.6; }
+        50% { transform: scale(1.2); opacity: 1; }
+      }
+      .glass {
+        background: rgba(15, 23, 42, 0.55);
+        border: 1px solid rgba(148, 163, 184, 0.2);
+        backdrop-filter: blur(18px);
+      }
+      .cta-gradient {
+        background: linear-gradient(120deg, rgba(56, 189, 248, 0.9), rgba(59, 130, 246, 0.9));
+      }
+    </style>
   </head>
-  <body>
-    <h1>CGI Web App</h1>
-    <p>Python と SQLite を使ったアプリをここから作っていきます。</p>
-    <h2>CGI Links</h2>
-    <ul>
-      <li><a href="hello.cgi">hello.cgi</a></li>
-      <li><a href="time.cgi">time.cgi</a></li>
-      <li><a href="notes.cgi">notes.cgi</a></li>
-      <li><a href="todo/">todo</a> - TODO List App (JavaScript + SQLite)</li>
-      <li><a href="textlog/">textlog</a> - Text Log App (Single-line text with timestamp)</li>
-      <li><a href="bookmark/">bookmark</a> - URL Bookmark App (OGP/Meta summary)</li>
-    </ul>
+  <body class="min-h-screen text-slate-100 font-sans">
+    <div id="tsparticles" class="fixed inset-0 -z-10"></div>
+    <div class="fixed inset-0 -z-10 bg-gradient-to-b from-slate-950 via-slate-900/90 to-slate-950"></div>
+    <div class="fixed inset-0 -z-10 grid-overlay opacity-40"></div>
+    <div class="fixed -top-48 left-1/2 -z-10 h-96 w-[36rem] -translate-x-1/2 rounded-full bg-cyan-500/20 blur-[120px]"></div>
+
+    <main class="relative mx-auto max-w-6xl px-6 pb-16 pt-10 lg:px-10">
+      <header class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="h-10 w-10 rounded-xl border border-cyan-400/40 bg-cyan-400/10 p-2 text-cyan-200 shadow-glow">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 3l7 4v8l-7 4-7-4V7l7-4z" />
+              <path d="M12 7v10" />
+              <path d="M5 9l7 4 7-4" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-cyan-200/80">CGI Landing</p>
+            <h1 class="text-xl font-semibold">GARYO CGI LAB</h1>
+          </div>
+        </div>
+        <div class="hidden gap-4 text-sm text-slate-300 md:flex">
+          <a class="transition hover:text-cyan-200" href="#apps">Apps</a>
+          <a class="transition hover:text-cyan-200" href="#status">Status</a>
+          <a class="transition hover:text-cyan-200" href="#links">Quick Links</a>
+        </div>
+      </header>
+
+      <section class="mt-12 grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
+        <div>
+          <p class="font-mono text-xs uppercase tracking-[0.4em] text-cyan-200/70">JavaScript + Python CGI + SQLite</p>
+          <h2 class="mt-4 text-4xl font-semibold leading-tight md:text-5xl">
+            サイバー実験区画、
+            <span class="text-cyan-300">稼働中</span>。
+          </h2>
+          <p class="mt-5 max-w-xl text-lg text-slate-300">
+            ここは garyo の CGI 実験場。フロントは CDN、バックは Python CGI。小さく速い検証を積み上げるためのラボです。
+          </p>
+          <div class="mt-8 flex flex-wrap gap-4">
+            <a href="#apps" class="cta-gradient rounded-full px-6 py-3 text-sm font-semibold text-slate-900 shadow-glow transition hover:scale-[1.02]">
+              Launch Apps
+            </a>
+            <a href="./bookmark/" class="rounded-full border border-cyan-200/60 px-6 py-3 text-sm font-semibold text-cyan-100 transition hover:border-cyan-200 hover:text-white">
+              Bookmark Lab
+            </a>
+            <a href="https://github.com/garyohosu/cgi" target="_blank" rel="noopener noreferrer" class="rounded-full border border-slate-500/60 px-6 py-3 text-sm font-semibold text-slate-200 transition hover:border-slate-300 hover:text-white">
+              GitHub Repo
+            </a>
+          </div>
+
+          <div class="mt-10 grid gap-4 md:grid-cols-3">
+            <div class="glass rounded-2xl px-4 py-4">
+              <p class="text-xs text-cyan-200/70">Focus</p>
+              <p class="mt-1 text-lg font-semibold">Fast CGI</p>
+              <p class="mt-2 text-sm text-slate-400">低コストで高速に検証</p>
+            </div>
+            <div class="glass rounded-2xl px-4 py-4">
+              <p class="text-xs text-cyan-200/70">Stack</p>
+              <p class="mt-1 text-lg font-semibold">JS + Python</p>
+              <p class="mt-2 text-sm text-slate-400">CDN + SQLite の組み合わせ</p>
+            </div>
+            <div class="glass rounded-2xl px-4 py-4">
+              <p class="text-xs text-cyan-200/70">Goal</p>
+              <p class="mt-1 text-lg font-semibold">Prototype</p>
+              <p class="mt-2 text-sm text-slate-400">小さく作って素早く公開</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="status" class="glass rounded-3xl p-6">
+          <div class="flex items-center justify-between">
+            <p class="text-sm font-semibold text-cyan-200">Status</p>
+            <span class="status-dot"></span>
+          </div>
+          <div class="mt-6 space-y-4 text-sm text-slate-300">
+            <div class="flex items-center justify-between">
+              <span>Gateway</span>
+              <span id="statusGateway" class="font-mono text-slate-200">Checking...</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span>DB</span>
+              <span id="statusDb" class="font-mono text-slate-200">--</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span>Latency</span>
+              <span id="statusLatency" class="font-mono text-slate-200">--</span>
+            </div>
+          </div>
+          <div class="mt-6 rounded-2xl border border-cyan-300/20 bg-cyan-300/10 px-4 py-3 text-xs text-cyan-100">
+            <p id="statusMessage">Attempting health check...</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="apps" class="mt-16">
+        <div class="flex items-center justify-between">
+          <h3 class="text-2xl font-semibold">Apps Dock</h3>
+          <span class="text-xs uppercase tracking-[0.3em] text-cyan-200/60">Click to launch</span>
+        </div>
+        <div id="appGrid" class="mt-6 grid gap-6 md:grid-cols-2 xl:grid-cols-3"></div>
+      </section>
+
+      <section id="links" class="mt-16 grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+        <div class="glass rounded-3xl p-6">
+          <h4 class="text-lg font-semibold">Quick Links</h4>
+          <p class="mt-2 text-sm text-slate-400">よく使う CGI へすぐアクセス。</p>
+          <div id="quickLinks" class="mt-4 flex flex-wrap gap-3"></div>
+        </div>
+        <div class="glass rounded-3xl p-6">
+          <h4 class="text-lg font-semibold">Roadmap</h4>
+          <p class="mt-2 text-sm text-slate-400">将来の追加予定。カードを足すだけで拡張できます。</p>
+          <ul class="mt-4 space-y-3 text-sm text-slate-300">
+            <li class="flex items-center gap-2">
+              <span class="h-2 w-2 rounded-full bg-cyan-300/80"></span>
+              AI 要約・検索統合
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="h-2 w-2 rounded-full bg-cyan-300/80"></span>
+              複数 DB の集計ダッシュボード
+            </li>
+            <li class="flex items-center gap-2">
+              <span class="h-2 w-2 rounded-full bg-cyan-300/80"></span>
+              新規 CGI ラボ（実験台）
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <footer class="mt-16 flex flex-col gap-3 border-t border-slate-800/80 pt-6 text-xs text-slate-500 md:flex-row md:items-center md:justify-between">
+        <p>GARYO CGI LAB — Built with CDN + CGI</p>
+        <div class="flex gap-4">
+          <a href="https://github.com/garyohosu/cgi" target="_blank" rel="noopener noreferrer" class="transition hover:text-cyan-200">GitHub</a>
+          <a href="https://garyo.sakura.ne.jp/cgi/index.html" class="transition hover:text-cyan-200">/cgi/ Home</a>
+          <a href="https://garyo.sakura.ne.jp/cgi/bookmark/" class="transition hover:text-cyan-200">Bookmark</a>
+        </div>
+      </footer>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@3/tsparticles.bundle.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+      const appCards = [
+        {
+          name: 'Bookmark Lab',
+          description: 'URLのOGP/メタ情報を収集して保存するブックマーク庫。',
+          href: './bookmark/',
+          badge: 'NEW',
+          icon: 'bookmark',
+        },
+        {
+          name: 'TODO Console',
+          description: 'タスク管理を最小構成で試す TODO アプリ。',
+          href: './todo/',
+          badge: 'APP',
+          icon: 'check-square',
+        },
+        {
+          name: 'Text Log',
+          description: '1行ログを高速に記録するテキストログ。',
+          href: './textlog/',
+          badge: 'LOG',
+          icon: 'file-text',
+        },
+        {
+          name: 'Notes CGI',
+          description: 'SQLite に保存するシンプルなメモ。',
+          href: './notes.cgi',
+          badge: 'CGI',
+          icon: 'pen-square',
+        },
+        {
+          name: 'Time CGI',
+          description: 'サーバー時刻の即時確認。',
+          href: './time.cgi',
+          badge: 'CGI',
+          icon: 'clock',
+        },
+        {
+          name: 'Hello CGI',
+          description: '最小の CGI 動作チェック。',
+          href: './hello.cgi',
+          badge: 'CGI',
+          icon: 'terminal',
+        },
+      ];
+
+      const quickLinks = [
+        { label: 'hello.cgi', href: './hello.cgi' },
+        { label: 'time.cgi', href: './time.cgi' },
+        { label: 'notes.cgi', href: './notes.cgi' },
+        { label: 'todo/', href: './todo/' },
+        { label: 'textlog/', href: './textlog/' },
+        { label: 'bookmark/', href: './bookmark/' },
+      ];
+
+      const appGrid = document.getElementById('appGrid');
+      const quickGrid = document.getElementById('quickLinks');
+
+      appCards.forEach((app) => {
+        const card = document.createElement('a');
+        card.href = app.href;
+        card.className =
+          'glass group flex h-full flex-col gap-4 rounded-3xl p-6 transition duration-300 hover:-translate-y-1 hover:border-cyan-300/70 hover:shadow-glow';
+
+        const badge = app.badge
+          ? `<span class="rounded-full border border-cyan-300/40 bg-cyan-300/10 px-3 py-1 text-[10px] uppercase tracking-[0.25em] text-cyan-100">${app.badge}</span>`
+          : '';
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <div class="flex h-11 w-11 items-center justify-center rounded-2xl bg-cyan-300/10 text-cyan-200">
+              <i data-lucide="${app.icon}"></i>
+            </div>
+            ${badge}
+          </div>
+          <div>
+            <h4 class="text-lg font-semibold text-white">${app.name}</h4>
+            <p class="mt-2 text-sm text-slate-400">${app.description}</p>
+          </div>
+          <div class="mt-auto text-xs font-mono text-cyan-200/70">Open →</div>
+        `;
+
+        appGrid.appendChild(card);
+      });
+
+      quickLinks.forEach((link) => {
+        const item = document.createElement('a');
+        item.href = link.href;
+        item.className =
+          'rounded-full border border-slate-700/80 bg-slate-900/70 px-4 py-2 text-xs text-slate-200 transition hover:border-cyan-300/70 hover:text-cyan-100';
+        item.textContent = link.label;
+        quickGrid.appendChild(item);
+      });
+
+      lucide.createIcons();
+
+      tsParticles.load('tsparticles', {
+        fpsLimit: 60,
+        background: { color: 'transparent' },
+        particles: {
+          number: { value: 60, density: { enable: true, area: 900 } },
+          color: { value: ['#38bdf8', '#60a5fa', '#e2e8f0'] },
+          shape: { type: 'circle' },
+          opacity: { value: 0.35 },
+          size: { value: { min: 1, max: 3 } },
+          move: { enable: true, speed: 0.6, outModes: 'out' },
+          links: { enable: true, color: '#38bdf8', opacity: 0.15, distance: 140 },
+        },
+        interactivity: {
+          events: { onHover: { enable: true, mode: 'grab' } },
+          modes: { grab: { distance: 140, links: { opacity: 0.25 } } },
+        },
+        detectRetina: true,
+      });
+
+      const statusGateway = document.getElementById('statusGateway');
+      const statusDb = document.getElementById('statusDb');
+      const statusLatency = document.getElementById('statusLatency');
+      const statusMessage = document.getElementById('statusMessage');
+
+      const healthCandidates = [
+        { label: 'bookmark', url: './bookmark/cgi/api.cgi?action=health' },
+        { label: 'root', url: './api.cgi?action=health' },
+      ];
+
+      async function tryHealth(endpoint) {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 1800);
+        const started = performance.now();
+        try {
+          const res = await fetch(endpoint.url, { signal: controller.signal, cache: 'no-store' });
+          if (!res.ok) {
+            return null;
+          }
+          const json = await res.json();
+          const latency = Math.round(performance.now() - started);
+          return { endpoint: endpoint.label, data: json, latency };
+        } catch (e) {
+          return null;
+        } finally {
+          clearTimeout(timeout);
+        }
+      }
+
+      async function updateStatus() {
+        for (const endpoint of healthCandidates) {
+          const result = await tryHealth(endpoint);
+          if (result && result.data && result.data.ok) {
+            statusGateway.textContent = `ok (${result.endpoint})`;
+            statusDb.textContent = result.data.data && result.data.data.db ? result.data.data.db : 'unknown';
+            statusLatency.textContent = `${result.latency}ms`;
+            statusMessage.textContent = 'Health check succeeded.';
+            return;
+          }
+        }
+        statusGateway.textContent = 'offline';
+        statusDb.textContent = '--';
+        statusLatency.textContent = '--';
+        statusMessage.textContent = 'No health endpoint detected.';
+      }
+
+      updateStatus();
+    </script>
   </body>
 </html>

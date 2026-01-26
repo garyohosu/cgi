@@ -16,6 +16,7 @@
 - Added Agents.md guidance to require spec-based tests and CI setup when adding new programs.
 - Updated README with test/CI guidance and added bookmark link to top-level index.html.
 - Added bookmark app URL to README sample links.
+- Refreshed top-level /cgi/ landing page with a cyber-style UI and added README instructions for landing page checks.
 
 ## 2026-01-22
 - Added Text Log app (`textlog/index.html`, `textlog/app.cgi`) - minimal web app with single-line text input, timestamp storage, and XSS prevention.
