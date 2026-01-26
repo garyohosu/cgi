@@ -41,10 +41,16 @@ def json_response(data, status="200 OK"):
     print(f"Status: {status}")
     print("Content-Type: application/json; charset=utf-8")
     print("Access-Control-Allow-Origin: *")
-    print("Access-Control-Allow-Methods: GET, POST, OPTIONS")
+    print("Access-Control-Allow-Methods: GET, POST, DELETE, OPTIONS")
     print("Access-Control-Allow-Headers: Content-Type")
     print()
     print(json.dumps(data, ensure_ascii=False))
+
+def parse_int(value):
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return None
 
 def sanitize_text(text):
     """Normalize text input before storage"""
@@ -89,6 +95,21 @@ def add_entry(text):
     
     return dict(row) if row else None
 
+def delete_entry(entry_id):
+    """Delete an entry by id"""
+    conn = get_db()
+    row = conn.execute(
+        "SELECT 1 FROM entries WHERE id = ?",
+        (entry_id,)
+    ).fetchone()
+    if not row:
+        conn.close()
+        return False
+    conn.execute("DELETE FROM entries WHERE id = ?", (entry_id,))
+    conn.commit()
+    conn.close()
+    return True
+
 # Main request handling
 method = os.environ.get("REQUEST_METHOD", "GET")
 
@@ -119,6 +140,23 @@ elif method == "POST":
                 json_response({"entry": entry, "message": "Entry added successfully"}, "201 Created")
             else:
                 json_response({"error": "Failed to create entry"}, "400 Bad Request")
+    except Exception as e:
+        traceback.print_exc(file=sys.stderr)
+        json_response({"error": "Internal Server Error"}, "500 Internal Server Error")
+
+elif method == "DELETE":
+    # Delete entry by id
+    try:
+        form = cgi.FieldStorage()
+        entry_id = parse_int(form.getfirst("id", ""))
+        if entry_id is None or entry_id <= 0:
+            json_response({"error": "ID must be a positive integer"}, "400 Bad Request")
+        else:
+            deleted = delete_entry(entry_id)
+            if deleted:
+                json_response({"status": "deleted"})
+            else:
+                json_response({"error": "Not found"}, "404 Not Found")
     except Exception as e:
         traceback.print_exc(file=sys.stderr)
         json_response({"error": "Internal Server Error"}, "500 Internal Server Error")
