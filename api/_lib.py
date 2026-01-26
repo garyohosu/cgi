@@ -56,6 +56,12 @@ STATUS_TEXT = {
     500: "Internal Server Error",
 }
 
+def print_cors_headers():
+    """Output CORS headers for cross-origin requests"""
+    print("Access-Control-Allow-Origin: *")
+    print("Access-Control-Allow-Methods: GET, POST, OPTIONS")
+    print("Access-Control-Allow-Headers: Content-Type")
+
 def send_response(data=None, error=None, status=200):
     """Sends JSON response"""
     result = {}
@@ -71,6 +77,7 @@ def send_response(data=None, error=None, status=200):
     status_text = STATUS_TEXT.get(status, "OK")
     print(f"Status: {status} {status_text}")
     print("Content-Type: application/json; charset=utf-8")
+    print_cors_headers()
     print("Cache-Control: no-store, no-cache, must-revalidate, max-age=0")
     print("Pragma: no-cache")
     print("Expires: 0")
@@ -117,6 +124,7 @@ def main(handler_func):
         if os.environ.get("REQUEST_METHOD") == "OPTIONS":
             print("Status: 204 No Content")
             print("Content-Type: text/plain")
+            print_cors_headers()
             print("Cache-Control: no-store, no-cache, must-revalidate, max-age=0")
             print("Pragma: no-cache")
             print("Expires: 0")
