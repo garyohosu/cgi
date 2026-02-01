@@ -30,6 +30,10 @@ repo-root/
       uuid.cgi
       validate.cgi
       convert.cgi
+      fortune.cgi       # おみくじ・運勢
+      random.cgi        # 汎用ランダム生成
+      password.cgi      # パスワード生成
+      hash.cgi          # ハッシュ生成
       _lib.py           # 共通処理（任意・推奨）
 ```
 
@@ -56,7 +60,7 @@ URL:
 - キャッシュ禁止
 
 ### セキュリティ（最低限）
-- 同一オリジン前提
+- CORS制限: https://garyohosu.github.io からのみアクセス可能
 - POST最大 64KB
 - 例外時にスタックトレースを返さない
 
@@ -83,6 +87,22 @@ URL:
   - temp: c,f,k
   - length: mm,cm,m,km,inch,ft
   - pressure: pa,kpa,mpa,bar,psi
+
+### GET fortune.cgi
+- クエリ: `date` (YYYY-MM-DD、省略可), `mode` (daily/random)
+- 返却: 運勢、ラッキーカラー、アドバイス、各種運勢カテゴリ
+
+### GET random.cgi
+- クエリ: `kind` (number/choice/string/dice/coin) + 各種パラメータ
+- 機能: 汎用ランダム生成（乱数、選択、文字列、サイコロ、コイントス）
+
+### GET password.cgi
+- クエリ: `length` (8-128), `count` (1-20), `complexity` (low/medium/high)
+- 返却: セキュアなパスワード配列、エントロピー情報
+
+### GET/POST hash.cgi
+- 入力: `text`, `algo` (md5/sha1/sha256等), `mode` (hash/hmac), `key` (HMAC用)
+- 返却: ハッシュ値またはHMAC値
 
 ---
 

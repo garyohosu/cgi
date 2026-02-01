@@ -57,10 +57,24 @@ STATUS_TEXT = {
 }
 
 def print_cors_headers():
-    """Output CORS headers for cross-origin requests"""
-    print("Access-Control-Allow-Origin: *")
+    """Output CORS headers for cross-origin requests - restricted to garyohosu.github.io"""
+    origin = os.environ.get("HTTP_ORIGIN", "")
+    
+    # Allow only requests from garyohosu.github.io
+    allowed_origins = [
+        "https://garyohosu.github.io",
+        "http://garyohosu.github.io"
+    ]
+    
+    if origin in allowed_origins:
+        print(f"Access-Control-Allow-Origin: {origin}")
+    else:
+        # No CORS header = browser blocks the response
+        pass
+    
     print("Access-Control-Allow-Methods: GET, POST, OPTIONS")
     print("Access-Control-Allow-Headers: Content-Type")
+    print("Vary: Origin")
 
 def send_response(data=None, error=None, status=200):
     """Sends JSON response"""
