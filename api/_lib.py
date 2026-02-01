@@ -60,7 +60,9 @@ def print_cors_headers():
     """Output CORS headers for cross-origin requests - restricted to garyohosu.github.io"""
     origin = os.environ.get("HTTP_ORIGIN", "")
     
-    # Allow only requests from garyohosu.github.io
+    # Allow requests from garyohosu.github.io domain (including all paths)
+    # Note: HTTP_ORIGIN header does not include path, only scheme + domain + port
+    # e.g., "https://garyohosu.github.io/ai-lab/" sends origin as "https://garyohosu.github.io"
     allowed_origins = [
         "https://garyohosu.github.io",
         "http://garyohosu.github.io"
