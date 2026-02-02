@@ -31,14 +31,10 @@ def check_origin():
     origin = os.environ.get('HTTP_ORIGIN', '')
     referer = os.environ.get('HTTP_REFERER', '')
     
-    # For personal use, allow if origin or referer matches
+    # Check if origin or referer matches allowed origins
     for allowed in ALLOWED_ORIGINS:
         if origin.startswith(allowed) or referer.startswith(allowed):
             return True
-    
-    # Also allow if no origin (direct API call for testing)
-    if not origin and not referer:
-        return True
     
     return False
 

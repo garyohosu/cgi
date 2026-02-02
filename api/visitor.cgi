@@ -12,6 +12,13 @@ import _lib
 # Data storage directory (relative to script location)
 DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "_data", "visitors")
 
+# Allowed origins for CORS
+ALLOWED_ORIGINS = [
+    "https://garyohosu.github.io",
+    "http://localhost",
+    "http://127.0.0.1"
+]
+
 # Simple country/city data for demonstration
 # In production, use GeoIP database or external API
 DEMO_LOCATIONS = {
@@ -29,6 +36,18 @@ def ensure_data_dir():
     """Ensure data directory exists"""
     if not os.path.exists(DATA_DIR):
         os.makedirs(DATA_DIR, exist_ok=True)
+
+def check_origin():
+    """Check if request is from allowed origin"""
+    origin = os.environ.get('HTTP_ORIGIN', '')
+    referer = os.environ.get('HTTP_REFERER', '')
+    
+    # Check if origin or referer matches allowed origins
+    for allowed in ALLOWED_ORIGINS:
+        if origin.startswith(allowed) or referer.startswith(allowed):
+            return True
+    
+    return False
 
 def get_client_ip():
     """Get client IP address"""
@@ -151,6 +170,10 @@ def get_stats():
 
 def handler():
     method = os.environ.get('REQUEST_METHOD', 'GET')
+    
+    # Check origin for security
+    if not check_origin():
+        raise ValueError("Unauthorized origin")
     
     if method == 'POST':
         # Record a visit

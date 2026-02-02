@@ -56,11 +56,34 @@ STATUS_TEXT = {
     500: "Internal Server Error",
 }
 
-def print_cors_headers():
-    """Output CORS headers for cross-origin requests"""
-    print("Access-Control-Allow-Origin: *")
+def print_cors_headers(allowed_origins=None):
+    """Output CORS headers for cross-origin requests
+    
+    Args:
+        allowed_origins: List of allowed origins. If None, defaults to garyohosu.github.io
+    """
+    if allowed_origins is None:
+        allowed_origins = ["https://garyohosu.github.io"]
+    
+    origin = os.environ.get('HTTP_ORIGIN', '')
+    
+    # Check if origin is allowed
+    origin_allowed = False
+    for allowed in allowed_origins:
+        if origin.startswith(allowed):
+            origin_allowed = True
+            break
+    
+    # Set CORS origin header
+    if origin_allowed:
+        print(f"Access-Control-Allow-Origin: {origin}")
+    else:
+        # Default to the primary origin
+        print(f"Access-Control-Allow-Origin: {allowed_origins[0]}")
+    
     print("Access-Control-Allow-Methods: GET, POST, OPTIONS")
     print("Access-Control-Allow-Headers: Content-Type")
+    print("Vary: Origin")
 
 def send_response(data=None, error=None, status=200):
     """Sends JSON response"""
