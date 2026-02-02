@@ -1,6 +1,12 @@
 # Visitor data files (JSONL format)
 *.jsonl
 
+# SQLite database files
+databases/*.db
+databases/*.db-journal
+databases/*.db-wal
+databases/*.db-shm
+
 # Any temporary files
 *.tmp
 *.bak
