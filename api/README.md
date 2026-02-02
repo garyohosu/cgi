@@ -11,7 +11,9 @@ cgi/
     uuid.cgi       # UUID生成
     validate.cgi   # JSONスキーマ検証
     convert.cgi    # 単位変換
+    visitor.cgi    # 訪問者カウンター
     _lib.py        # 共通処理ライブラリ
+    _data/         # データストレージ
     README.md      # このファイル
     tests/         # テスト
 ```
@@ -38,6 +40,19 @@ UUID(v4) を発行します。
 - `value`: 数値
 - `from`, `to`: 単位
 - `curl "https://example.com/cgi/api/convert.cgi?kind=temp&value=0&from=c&to=f"`
+
+### POST `visitor.cgi`
+訪問者を記録します。
+- `action`: `visit` (必須)
+- `page`: ページパス (任意)
+- `referrer`: リファラー (任意)
+- `curl -X POST -H "Content-Type: application/json" -d '{"action": "visit", "page": "/index.html"}' "https://example.com/cgi/api/visitor.cgi"`
+
+### GET `visitor.cgi`
+訪問統計を取得します。
+- `action`: `stats` (デフォルト)
+- `curl "https://example.com/cgi/api/visitor.cgi?action=stats"`
+- レスポンスには総訪問数、今日の訪問数、オンライン数、最近の訪問者位置情報、時間別統計、国別ランキングが含まれます。
 
 ## デプロイ設定
 - 全ての `.cgi` ファイルに実行権限（`chmod 755`）を付与してください。

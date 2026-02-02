@@ -1,0 +1,6 @@
+# Visitor data files (JSONL format)
+*.jsonl
+
+# Any temporary files
+*.tmp
+*.bak
